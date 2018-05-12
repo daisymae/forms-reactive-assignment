@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Validators, FormGroup, FormControl } from '@angular/forms';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -12,7 +13,8 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     this.projectForm = new FormGroup({
-      'projectName': new FormControl('', [Validators.required, this.invalidProjectName]),
+      // 'projectName': new FormControl('', [Validators.required, this.invalidProjectName]),
+      'projectName': new FormControl('', Validators.required, this.invalidProjectAsync),
       'email': new FormControl('', [Validators.required, Validators.email]),
       // if default value is not set for select,
       // nothing is returned if default remains selection
@@ -30,5 +32,18 @@ export class AppComponent implements OnInit {
     }
   }
 
+  invalidProjectAsync(control: FormControl): Promise<any> | Observable<any> {
+    const promise = new Promise<any>((resolve, reject) => {
+      // set a timer to mock asynchronous call
+      setTimeout(() => {
+        if (control.value === 'Test') {
+          resolve({ 'invalidProjectAsync': true});
+        } else {
+          resolve(null);
+        }
+      }, 1500);
+    });
+    return promise;
+  }
 
 }
